@@ -1,0 +1,57 @@
+[gd_scene load_steps=2 format=3 uid="uid://sfeddt1sw0qy"]
+
+[ext_resource type="Script" path="res://Menu.gd" id="1_lnm1f"]
+
+[node name="MenuControl" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lnm1f")
+
+[node name="BackgoundColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1153.0
+offset_bottom = 644.0
+color = Color(0, 0.72549, 0.72549, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="BackgoundColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BackgoundColorRect/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="BackgoundColorRect/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 100
+text = "CABO"
+horizontal_alignment = 1
+
+[node name="SinglePlayerBtn" type="Button" parent="BackgoundColorRect/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Single Player"
+
+[node name="MultiPlayerBtn" type="Button" parent="BackgoundColorRect/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Multi Player"
+
+[node name="ExitBtn" type="Button" parent="BackgoundColorRect/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Exit"
+
+[connection signal="pressed" from="BackgoundColorRect/CenterContainer/VBoxContainer/SinglePlayerBtn" to="." method="_on_single_player_btn_pressed"]
+[connection signal="pressed" from="BackgoundColorRect/CenterContainer/VBoxContainer/ExitBtn" to="." method="_on_exit_btn_pressed"]
