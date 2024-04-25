@@ -1,10 +1,59 @@
 [gd_scene load_steps=3 format=3 uid="uid://badpk6jmpibd"]
 
-[ext_resource type="Script" path="res://Game.gd" id="1_g0wvs"]
-[ext_resource type="PackedScene" uid="uid://d4ev3ldonnqu0" path="res://Card.tscn" id="2_q8i0p"]
+[ext_resource type="Script" path="res://Main.gd" id="1_xuuuq"]
+[ext_resource type="PackedScene" uid="uid://d4ev3ldonnqu0" path="res://Card.tscn" id="2_00ohj"]
 
 [node name="Node2D" type="Node2D"]
-script = ExtResource("1_g0wvs")
+script = ExtResource("1_xuuuq")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="CenterContainer" type="CenterContainer" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -382.5
+offset_top = -170.5
+offset_right = 382.5
+offset_bottom = 170.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="HUD/CenterContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD/CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Please choose your operation:"
+
+[node name="DropCardBtn" type="Button" parent="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Drop Card"
+
+[node name="ExchangeCardBtn" type="Button" parent="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Exchange Card"
+
+[node name="UseCardBtn" type="Button" parent="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Use Card"
 
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_right = 1152.0
@@ -71,7 +120,7 @@ size_flags_stretch_ratio = 3.0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CardTile" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer" instance=ExtResource("2_q8i0p")]
+[node name="CardTile" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer" instance=ExtResource("2_00ohj")]
 layout_mode = 2
 
 [node name="Control2" type="Control" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer"]
@@ -103,54 +152,6 @@ size_flags_stretch_ratio = 2.0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CenterContainer" type="CenterContainer" parent="ColorRect"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -382.5
-offset_top = -170.5
-offset_right = 382.5
-offset_bottom = 170.5
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PanelContainer" type="PanelContainer" parent="ColorRect/CenterContainer"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="ColorRect/CenterContainer/PanelContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 30
-theme_override_constants/margin_right = 30
-theme_override_constants/margin_bottom = 30
-
-[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/CenterContainer/PanelContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Label" type="Label" parent="ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Please choose your operation:"
-
-[node name="DropCardBtn" type="Button" parent="ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Drop Card"
-
-[node name="ExchangeCardBtn" type="Button" parent="ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Exchange Card"
-
-[node name="UseCardBtn" type="Button" parent="ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Use Card"
-
 [node name="DrawTimer" type="Timer" parent="."]
 wait_time = 5.0
 
@@ -161,9 +162,10 @@ wait_time = 5.0
 one_shot = true
 autostart = true
 
+[connection signal="pressed" from="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/DropCardBtn" to="." method="_on_drop_card_btn_pressed"]
+[connection signal="pressed" from="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ExchangeCardBtn" to="." method="_on_exchange_card_btn_pressed"]
+[connection signal="pressed" from="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/UseCardBtn" to="." method="_on_use_card_btn_pressed"]
 [connection signal="draw_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/CardTile" to="." method="_on_card_tile_draw_card"]
-[connection signal="pressed" from="ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/DropCardBtn" to="." method="_on_drop_card_btn_pressed"]
-[connection signal="pressed" from="ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ExchangeCardBtn" to="." method="_on_exchange_card_btn_pressed"]
-[connection signal="pressed" from="ColorRect/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/UseCardBtn" to="." method="_on_use_card_btn_pressed"]
+[connection signal="drop_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/CardTile" to="." method="_on_card_tile_drop_card"]
 [connection signal="timeout" from="DrawTimer" to="." method="_on_draw_timer_timeout"]
 [connection signal="timeout" from="StartCountdown" to="." method="_on_start_countdown_timeout"]
