@@ -7,6 +7,7 @@
 script = ExtResource("1_xuuuq")
 
 [node name="HUD" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="CenterContainer" type="CenterContainer" parent="HUD"]
 anchors_preset = 8
@@ -166,6 +167,5 @@ autostart = true
 [connection signal="pressed" from="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ExchangeCardBtn" to="." method="_on_exchange_card_btn_pressed"]
 [connection signal="pressed" from="HUD/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/UseCardBtn" to="." method="_on_use_card_btn_pressed"]
 [connection signal="draw_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/CardTile" to="." method="_on_card_tile_draw_card"]
-[connection signal="drop_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/CardTile" to="." method="_on_card_tile_drop_card"]
 [connection signal="timeout" from="DrawTimer" to="." method="_on_draw_timer_timeout"]
 [connection signal="timeout" from="StartCountdown" to="." method="_on_start_countdown_timeout"]

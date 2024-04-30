@@ -75,8 +75,8 @@ func on_card_click(event):
 		emit_signal("draw_card")
 
 func drop():
-	queue_free()
 	emit_signal("drop_card", index)
+	queue_free()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
