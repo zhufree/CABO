@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cnt7202nolha8"]
+
+[ext_resource type="Script" path="res://Player.gd" id="1_qicff"]
+
+[node name="PlayerCards" type="BoxContainer"]
+script = ExtResource("1_qicff")

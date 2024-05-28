@@ -1,58 +1,41 @@
 class_name Game
 extends Node2D
 
-var player_card_numbers = []
-var current_draw_card
-var player_card_nodes = []
+
 var card_scene = preload("res://Card.tscn")
 
 var cardSelected
 var mouseOnPlacement = false
+var current_draw_card
+
 @onready var state_manager = $GameStateManager
 @onready var hand_card = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer3/HandCard
-@onready var notice_label = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer/NoticeLabel
-@onready var card_tile = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/CardTile
-@onready var player_card_container = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCardContainer
 @onready var operation_container = $HUD/OperationContainer
 @onready var restart_button = $HUD/RestartButton
+@onready var draw_deck = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/DrawDeck
+@onready var discard_pile = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/DiscardPile
+@onready var player = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCards
+@onready var notice_label = $HUD/NoticeLabel
+@onready var enemy_1 = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer/Enemy1
+@onready var enemy_2 = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/Enemy2
+@onready var enemy_3 = $ColorRect/MarginContainer/HBoxContainer/VBoxContainer3/Enemy3
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	operation_container.hide()
-	card_tile.card_type = Card.CardType.TILE
-	#card_tile.connect("draw_card", self, "_on_draw_card")
+	#draw_deck.connect("draw_card", self, "_on_draw_card")
 
 func restart():
 	state_manager.transition_to(state_manager.GameState.INIT)
 	Global.check_count = 0
 	Global.game_round = 0
-	player_card_numbers = []
-	player_card_nodes = []
+	
 	operation_container.hide()
-	# clear all children in player_card_container
-	for child in player_card_container.get_children():
-		child.queue_free()
+	# clear 手牌
 	for child in hand_card.get_children():
 		child.queue_free()
 	_on_start_countdown_timeout()
-
-func add_default_cards():
-	for i in range(4):
-		var new_card = card_scene.instantiate()
-		var new_card_number = Global.cards.pick_random()
-		Global.cards.erase(new_card_number) # remove the card from cards
-		new_card.number = new_card_number
-		new_card.index = i
-		new_card.connect("drop_card", Callable(self, "_on_player_card_drop"))
-		new_card.connect("peek_card", Callable(self, "_on_player_peek_card"))
-		new_card.connect("remember_card", Callable(self, "_on_player_remember_card"))
-		player_card_nodes.append(new_card)
-		player_card_numbers.append(new_card_number)
-		player_card_container.add_child(new_card)
-		new_card.refresh_display()
-		await get_tree().create_timer(0.5).timeout
-	notice_label.set_text("Now Choose two card to check.")
-	state_manager.transition_to(state_manager.GameState.CHECK)
 
 
 func _process(_delta):
@@ -60,17 +43,20 @@ func _process(_delta):
 
 
 func _on_start_countdown_timeout():
-	notice_label.set_text("Game Start, draw 4 cards.")
-	add_default_cards()
+	notice_label.set_text("Game Start,everyone draw 4 cards.")
+	player.draw_default_cards(draw_deck.draw_cards(4))
+	enemy_1.draw_default_cards(draw_deck.draw_cards(4))
+	enemy_2.draw_default_cards(draw_deck.draw_cards(4))
+	enemy_3.draw_default_cards(draw_deck.draw_cards(4))
 
 
 func _on_draw_timer_timeout():
 	# force draw a card
-	_on_card_tile_draw_card()
+	_on_card_pile_draw_card()
 
 
 # draw a card
-func _on_card_tile_draw_card():
+func _on_card_pile_draw_card():
 	var new_card = card_scene.instantiate()
 	new_card.number = Global.cards.pop_front()
 	new_card.card_type = Card.CardType.HAND
@@ -89,7 +75,7 @@ func _on_player_remember_card():
 func _on_drop_card_btn_pressed():
 	notice_label.set_text("You dropped the card[{num}] you drawed.".format({num=current_draw_card.number}))
 	current_draw_card.drop()
-	Global.game_round += 1
+	state_manager.game_round += 1
 	# next round
 	#operation_container.hide()
 	#state_manager.transition_to(state_manager.GameState.DRAW)
@@ -105,23 +91,6 @@ func _on_use_card_btn_pressed():
 	if not current_draw_card.has_function():
 		return
 	# todo
-
-
-func _on_player_card_drop(index):
-	# replace the old card
-	player_card_numbers[index] = current_draw_card.number
-	player_card_nodes[index] = current_draw_card.duplicate()
-	player_card_nodes[index].index = index
-	player_card_nodes[index].number = current_draw_card.number
-	if index == 0: # the last card
-		player_card_container.add_child(player_card_nodes[index])
-		player_card_container.move_child(player_card_nodes[index], 0)
-	else:
-		player_card_nodes[index-1].add_sibling(player_card_nodes[index])
-	player_card_nodes[index].refresh_display()
-	player_card_nodes[index].reveal_card()
-	hand_card.remove_child(current_draw_card)
-	current_draw_card.queue_free()
 
 func _on_player_peek_card():
 	state_manager.transition_to(state_manager.GameState.PEEK)
@@ -139,9 +108,11 @@ func _on_restart_button_pressed():
 	restart()
 
 
-func _on_player_card_container_mouse_entered():
-	pass # Replace with function body.
+func _on_player_cards_finish_draw(player_number):
+	notice_label.set_text("Now Choose two card to check.")
+	state_manager.transition_to(state_manager.GameState.CHECK)
 
 
-func _on_player_card_container_mouse_exited():
-	pass # Replace with function body.
+func _on_player_cards_finish_replace_card():
+	hand_card.remove_child(current_draw_card)
+	current_draw_card.queue_free()

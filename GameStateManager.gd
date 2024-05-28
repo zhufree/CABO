@@ -1,9 +1,25 @@
 extends Node
+
+signal enter_init
+signal enter_check
+signal enter_remember
+signal enter_draw
+signal enter_exchange
+signal enter_use
+signal enter_drop
+signal enter_peek
+signal enter_spy
+signal enter_swap
+
 enum GameState{
 	INIT, CHECK, REMEMBER, DRAW, EXCHANGE, USE, DROP, PEEK, SPY, SWAP
 }
+@onready var status_label = $"../HUD/StatusLabel"
 
 var current_state = GameState.INIT
+var game_round = 0
+var dropped_cards = []
+
 var signals = {
 	GameState.INIT: "enter_init",
 	GameState.CHECK: "enter_check",
@@ -19,7 +35,7 @@ var signals = {
 
 func _ready():
 	# 连接状态转换信号
-	connect("enter_init", Callable(self, "_on_enter_int"))
+	connect(signals.get(GameState.INIT), Callable(self, "_on_enter_int"))
 	connect("enter_check", Callable(self, "_on_enter_check"))
 	connect("enter_remember", Callable(self, "_on_enter_remember"))
 	connect("enter_draw", Callable(self, "_on_enter_draw"))
@@ -32,8 +48,14 @@ func _ready():
 	# 初始化游戏状态
 	transition_to(GameState.INIT)
 
+
+func add_dropped_card(card):
+	dropped_cards.append(card)
+
+
 func transition_to(state):
 	current_state = state
+	status_label.text = "Status: {}".format(state)
 	emit_signal(signals[state])
 
 func _on_enter_init():

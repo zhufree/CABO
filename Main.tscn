@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://badpk6jmpibd"]
+[gd_scene load_steps=5 format=3 uid="uid://badpk6jmpibd"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_xuuuq"]
-[ext_resource type="PackedScene" uid="uid://d4ev3ldonnqu0" path="res://Card.tscn" id="2_00ohj"]
+[ext_resource type="PackedScene" uid="uid://bqr1gj56vweum" path="res://CardPile.tscn" id="2_savw4"]
 [ext_resource type="Script" path="res://GameStateManager.gd" id="3_2ct4m"]
+[ext_resource type="PackedScene" uid="uid://cnt7202nolha8" path="res://PlayerCards.tscn" id="3_dv03w"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_xuuuq")
@@ -13,6 +14,19 @@ script = ExtResource("1_xuuuq")
 offset_right = 8.0
 offset_bottom = 8.0
 text = "Restart"
+
+[node name="StatusLabel" type="Label" parent="HUD"]
+offset_left = 6.0
+offset_top = 33.0
+offset_right = 60.0
+offset_bottom = 56.0
+text = "Status:"
+
+[node name="NoticeLabel" type="Label" parent="HUD"]
+offset_left = 5.0
+offset_top = 57.0
+offset_right = 59.0
+offset_bottom = 80.0
 
 [node name="OperationContainer" type="CenterContainer" parent="HUD"]
 anchors_preset = 8
@@ -88,20 +102,15 @@ custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 alignment = 1
 
-[node name="NoticeLabel" type="Label" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="Spacer1" type="Control" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 24
-text = "Game Start!"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 2
 
-[node name="Enemy1CardContainer" type="HBoxContainer" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="Enemy1" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer" instance=ExtResource("3_dv03w")]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
+player_type = 1
 
 [node name="Spacer2" type="Control" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -112,33 +121,24 @@ layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="Enemy2CardContainer" type="HBoxContainer" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2"]
+[node name="Enemy2" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("3_dv03w")]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
+player_type = 1
 
 [node name="VBoxContainer" type="HBoxContainer" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 3.0
 
-[node name="Control" type="Control" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="DrawDeck" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer" instance=ExtResource("2_savw4")]
 
-[node name="CardTile" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer" instance=ExtResource("2_00ohj")]
-layout_mode = 2
+[node name="DiscardPile" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer" instance=ExtResource("2_savw4")]
+type = 1
 
-[node name="Control2" type="Control" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="PlayerCardContainer" type="HBoxContainer" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2"]
-layout_direction = 2
+[node name="PlayerCards" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("3_dv03w")]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
-alignment = 1
 
 [node name="VBoxContainer3" type="VBoxContainer" parent="ColorRect/MarginContainer/HBoxContainer"]
 custom_minimum_size = Vector2(300, 0)
@@ -149,10 +149,10 @@ alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Enemy3CardContainer" type="HBoxContainer" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer3"]
+[node name="Enemy3" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer3" instance=ExtResource("3_dv03w")]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
+player_type = 1
 
 [node name="HandCard" type="MarginContainer" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer3"]
 layout_mode = 2
@@ -175,8 +175,7 @@ script = ExtResource("3_2ct4m")
 [connection signal="pressed" from="HUD/OperationContainer/PanelContainer/MarginContainer/VBoxContainer/DropCardBtn" to="." method="_on_drop_card_btn_pressed"]
 [connection signal="pressed" from="HUD/OperationContainer/PanelContainer/MarginContainer/VBoxContainer/ExchangeCardBtn" to="." method="_on_exchange_card_btn_pressed"]
 [connection signal="pressed" from="HUD/OperationContainer/PanelContainer/MarginContainer/VBoxContainer/UseCardBtn" to="." method="_on_use_card_btn_pressed"]
-[connection signal="draw_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/CardTile" to="." method="_on_card_tile_draw_card"]
-[connection signal="mouse_entered" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCardContainer" to="." method="_on_player_card_container_mouse_entered"]
-[connection signal="mouse_exited" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCardContainer" to="." method="_on_player_card_container_mouse_exited"]
+[connection signal="finish_draw" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCards" to="." method="_on_player_cards_finish_draw"]
+[connection signal="finish_replace_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCards" to="." method="_on_player_cards_finish_replace_card"]
 [connection signal="timeout" from="DrawTimer" to="." method="_on_draw_timer_timeout"]
 [connection signal="timeout" from="StartCountdown" to="." method="_on_start_countdown_timeout"]

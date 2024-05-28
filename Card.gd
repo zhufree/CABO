@@ -25,6 +25,10 @@ signal peek_card
 signal spy_card
 signal swap_card
 
+func init(_number, _index):
+	number = _number
+	index = _index
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	front_img.texture = preload("res://assets/red_frame.png")
@@ -99,6 +103,7 @@ func on_card_click(event):
 		emit_signal("draw_card")
 
 func drop():
+	state_manager.add_dropped_card(number)
 	emit_signal("drop_card", index)
 	queue_free()
 
