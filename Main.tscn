@@ -110,6 +110,7 @@ size_flags_vertical = 3
 [node name="Enemy1" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer" instance=ExtResource("3_dv03w")]
 layout_mode = 2
 size_flags_vertical = 3
+vertical = true
 player_type = 1
 
 [node name="Spacer2" type="Control" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer"]
@@ -132,8 +133,12 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 3.0
 
 [node name="DrawDeck" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer" instance=ExtResource("2_savw4")]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="DiscardPile" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer" instance=ExtResource("2_savw4")]
+layout_mode = 2
+size_flags_horizontal = 3
 type = 1
 
 [node name="PlayerCards" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("3_dv03w")]
@@ -152,14 +157,25 @@ size_flags_vertical = 3
 [node name="Enemy3" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer3" instance=ExtResource("3_dv03w")]
 layout_mode = 2
 size_flags_vertical = 3
+vertical = true
 player_type = 1
 
-[node name="HandCard" type="MarginContainer" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer3"]
+[node name="Spacer2" type="Control" parent="ColorRect/MarginContainer/HBoxContainer/VBoxContainer3"]
 layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HandCard" type="MarginContainer" parent="ColorRect"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 0
+offset_left = 897.0
+offset_top = 411.0
+offset_right = 1097.0
+offset_bottom = 611.0
 size_flags_vertical = 3
 
 [node name="DrawTimer" type="Timer" parent="."]
 wait_time = 5.0
+one_shot = true
 
 [node name="OperateTimer" type="Timer" parent="."]
 wait_time = 5.0
@@ -175,7 +191,9 @@ script = ExtResource("3_2ct4m")
 [connection signal="pressed" from="HUD/OperationContainer/PanelContainer/MarginContainer/VBoxContainer/DropCardBtn" to="." method="_on_drop_card_btn_pressed"]
 [connection signal="pressed" from="HUD/OperationContainer/PanelContainer/MarginContainer/VBoxContainer/ExchangeCardBtn" to="." method="_on_exchange_card_btn_pressed"]
 [connection signal="pressed" from="HUD/OperationContainer/PanelContainer/MarginContainer/VBoxContainer/UseCardBtn" to="." method="_on_use_card_btn_pressed"]
+[connection signal="draw_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/DrawDeck" to="." method="_on_card_pile_draw_card"]
 [connection signal="finish_draw" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCards" to="." method="_on_player_cards_finish_draw"]
+[connection signal="finish_peek_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCards" to="." method="_on_player_cards_finish_peek_card"]
 [connection signal="finish_replace_card" from="ColorRect/MarginContainer/HBoxContainer/VBoxContainer2/PlayerCards" to="." method="_on_player_cards_finish_replace_card"]
 [connection signal="timeout" from="DrawTimer" to="." method="_on_draw_timer_timeout"]
 [connection signal="timeout" from="StartCountdown" to="." method="_on_start_countdown_timeout"]

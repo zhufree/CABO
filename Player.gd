@@ -1,7 +1,8 @@
 extends BoxContainer
 
 signal finish_draw(player_number)
-signal finish_replace_card()
+signal finish_replace_card
+signal finish_peek_card
 @export var player_type = PlayerType.HUMAN
 enum PlayerType {
 	HUMAN, AI
@@ -10,6 +11,7 @@ var player_number = 0
 var player_card_numbers = []
 var player_card_nodes = []
 var card_scene = preload("res://Card.tscn")
+@onready var state_manager = $"../../../../../GameStateManager"
 
 func restart():
 	player_card_numbers = []
@@ -20,23 +22,23 @@ func restart():
 func is_player():
 	return player_type == PlayerType.HUMAN
 
-func draw_default_cards():
-	for i in range(4):
+func draw_default_cards(cards):
+	for index in cards.size():
 		var new_card = card_scene.instantiate()
-		var new_card_number = Global.cards.pick_random()
-		Global.cards.erase(new_card_number) # remove the card from cards
-		new_card.init(new_card_number,i)
+		if is_player():
+			new_card.init(cards[index], index, Card.CardType.PLAYER)
+		else:
+			new_card.init(cards[index], index, Card.CardType.AI)
 		new_card.connect("drop_card", Callable(self, "_on_player_card_drop"))
-		new_card.connect("peek_card", Callable(self, "_on_player_peek_card"))
-		new_card.connect("remember_card", Callable(self, "_on_player_remember_card"))
+		new_card.connect("finish_peek_card", Callable(self, "_on_player_finish_peek_card"))
 		player_card_nodes.append(new_card)
-		player_card_numbers.append(new_card_number)
+		player_card_numbers.append(cards[index])
 		add_child(new_card)
 		new_card.refresh_display()
 		if is_player():
 			await get_tree().create_timer(0.5).timeout
-	emit_signal("finish_draw", player_number)
-
+	if (is_player()):
+		state_manager.transition_to(state_manager.GameState.CHECK)
 
 
 func _on_player_card_drop(index, is_replace = false, replace_card_number = -1):
@@ -54,6 +56,11 @@ func _on_player_card_drop(index, is_replace = false, replace_card_number = -1):
 		player_card_nodes[index].refresh_display()
 		player_card_nodes[index].reveal_card()
 		emit_signal("finish_replace_card")
+
+
+func _on_player_finish_peek_card():
+	emit_signal("finish_peek_card")
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

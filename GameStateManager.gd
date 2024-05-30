@@ -4,6 +4,7 @@ signal enter_init
 signal enter_check
 signal enter_remember
 signal enter_draw
+signal enter_operate
 signal enter_exchange
 signal enter_use
 signal enter_drop
@@ -12,9 +13,11 @@ signal enter_spy
 signal enter_swap
 
 enum GameState{
-	INIT, CHECK, REMEMBER, DRAW, EXCHANGE, USE, DROP, PEEK, SPY, SWAP
+	INIT, CHECK, REMEMBER, DRAW, OPERATE, EXCHANGE, USE, DROP, PEEK, SPY, SWAP
 }
 @onready var status_label = $"../HUD/StatusLabel"
+@onready var notice_label = $"../HUD/NoticeLabel"
+@onready var draw_timer = $"../DrawTimer"
 
 var current_state = GameState.INIT
 var game_round = 0
@@ -25,6 +28,7 @@ var signals = {
 	GameState.CHECK: "enter_check",
 	GameState.REMEMBER: "enter_remember",
 	GameState.DRAW: "enter_draw",
+	GameState.OPERATE: "enter_operate",
 	GameState.EXCHANGE: "enter_exchange",
 	GameState.USE: "enter_use",
 	GameState.DROP: "enter_drop",
@@ -39,6 +43,7 @@ func _ready():
 	connect("enter_check", Callable(self, "_on_enter_check"))
 	connect("enter_remember", Callable(self, "_on_enter_remember"))
 	connect("enter_draw", Callable(self, "_on_enter_draw"))
+	connect("enter_operate", Callable(self, "_on_enter_operate"))
 	connect("enter_exchange", Callable(self, "_on_enter_exchange"))
 	connect("enter_use", Callable(self, "_on_enter_use"))
 	connect("enter_drop", Callable(self, "_on_enter_drop"))
@@ -55,45 +60,48 @@ func add_dropped_card(card):
 
 func transition_to(state):
 	current_state = state
-	status_label.text = "Status: {}".format(state)
+	status_label.text = "Status: %s" % [state]
 	emit_signal(signals[state])
 
 func _on_enter_init():
 	print("Entering Init State")
-	transition_to(GameState.INIT)
 
 func _on_enter_check():
 	print("Entering Check State")
-	transition_to(GameState.CHECK)
+	notice_label.set_text("Now Choose two card to check.")
 
 func _on_enter_remember():
 	print("Entering Remember State")
-	transition_to(GameState.REMEMBER)
+	notice_label.set_text("Please remember your cards in 3 seconds.")
+	await get_tree().create_timer(3).timeout
+	notice_label.set_text("Please draw 1 card in 5 seconds.")
+	transition_to(GameState.DRAW)
+	draw_timer.start()
 
 func _on_enter_draw():
 	print("Entering Draw State")
-	transition_to(GameState.DRAW)
+
+func _on_enter_operate():
+	print("Entering Operate State")
 
 func _on_enter_exchange():
 	print("Entering Exchange State")
-	transition_to(GameState.EXCHANGE)
 
 func _on_enter_use():
 	print("Entering Use State")
-	transition_to(GameState.USE)
 
 func _on_enter_drop():
 	print("Entering Drop State")
-	transition_to(GameState.DROP)
 
 func _on_enter_peek():
 	print("Entering Peek State")
-	transition_to(GameState.PEEK)
+	notice_label.set_text("Choose one card of yourself to peek.")
 
 func _on_enter_spy():
 	print("Entering Spy State")
-	transition_to(GameState.SPY)
+	notice_label.set_text("Choose one card of others to spy.")
 
 func _on_enter_swap():
 	print("Entering Swap State")
-	transition_to(GameState.SWAP)
+	notice_label.set_text("Choose one card to swap another one.")
+
